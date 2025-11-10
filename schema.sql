@@ -1,59 +1,48 @@
-DROP TABLE IF EXISTS pool_members CASCADE;
-DROP TABLE IF EXISTS pools CASCADE;
-DROP TABLE IF EXISTS bank_entries CASCADE;
-DROP TABLE IF EXISTS ship_compliance CASCADE;
-DROP TABLE IF EXISTS routes CASCADE;
-
--- =====================================
--- 1️⃣ ROUTES TABLE
--- =====================================
+-- ROUTES TABLE
 CREATE TABLE routes (
     id SERIAL PRIMARY KEY,
-    route_id VARCHAR(50) UNIQUE NOT NULL,
+    route_id VARCHAR(10) UNIQUE NOT NULL,
+    vessel_type VARCHAR(50) NOT NULL,
+    fuel_type VARCHAR(50) NOT NULL,
     year INT NOT NULL,
-    ghg_intensity DECIMAL(10,4) NOT NULL,
-    is_baseline BOOLEAN DEFAULT FALSE
+    ghg_intensity FLOAT NOT NULL,         -- gCO₂e/MJ
+    fuel_consumption FLOAT NOT NULL,      -- tonnes
+    distance_km FLOAT NOT NULL,
+    total_emissions FLOAT NOT NULL,
+    is_baseline BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
--- =====================================
--- 2️⃣ SHIP COMPLIANCE TABLE
--- =====================================
+-- SHIP COMPLIANCE TABLE
 CREATE TABLE ship_compliance (
     id SERIAL PRIMARY KEY,
-    ship_id VARCHAR(50) NOT NULL,
+    ship_id VARCHAR(20) NOT NULL,
     year INT NOT NULL,
-    cb_gco2eq DECIMAL(15,4) NOT NULL,
-    UNIQUE (ship_id, year)
+    cb_gco2eq FLOAT NOT NULL,             -- Compliance balance in gCO₂e
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
--- =====================================
--- 3️⃣ BANK ENTRIES TABLE
--- =====================================
+-- BANK ENTRIES TABLE
 CREATE TABLE bank_entries (
     id SERIAL PRIMARY KEY,
-    ship_id VARCHAR(50) NOT NULL,
+    ship_id VARCHAR(20) NOT NULL,
     year INT NOT NULL,
-    amount_gco2eq DECIMAL(15,4) NOT NULL,
-    UNIQUE (ship_id, year)
+    amount_gco2eq FLOAT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
--- =====================================
--- 4️⃣ POOLS TABLE
--- =====================================
+-- POOLS TABLE
 CREATE TABLE pools (
     id SERIAL PRIMARY KEY,
     year INT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- =====================================
--- 5️⃣ POOL MEMBERS TABLE
--- =====================================
+-- POOL MEMBERS TABLE
 CREATE TABLE pool_members (
     id SERIAL PRIMARY KEY,
-    pool_id INT REFERENCES pools(id) ON DELETE CASCADE,
-    ship_id VARCHAR(50) NOT NULL,
-    cb_before DECIMAL(15,4),
-    cb_after DECIMAL(15,4),
-    UNIQUE (pool_id, ship_id)
+    pool_id INT NOT NULL REFERENCES pools(id) ON DELETE CASCADE,
+    ship_id VARCHAR(20) NOT NULL,
+    cb_before FLOAT NOT NULL,
+    cb_after FLOAT NOT NULL
 );
