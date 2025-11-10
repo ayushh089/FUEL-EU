@@ -3,6 +3,7 @@ import apiClient from '../../infrastructure/apiClient'
 
 export default function BankingTab(){
   const [year, setYear] = useState<number>(new Date().getFullYear())
+  const [shipId, setShipId] = useState<string>('')
   const [cb, setCb] = useState<number | null>(null)
   const [amount, setAmount] = useState<string>('')
   const [kpis, setKpis] = useState<{cb_before:number, applied:number, cb_after:number} | null>(null)
@@ -12,20 +13,26 @@ export default function BankingTab(){
   async function load(){
     setLoading(true); setError(null)
     try{
-      const res = await apiClient.getCb(year)
+      if (!shipId) {
+        setCb(null)
+        setError('Enter shipId to load CB')
+        return
+      }
+      const res = await apiClient.getCb(shipId, year)
       setCb(res.cb)
     }catch(err: unknown){ setError(err instanceof Error ? err.message : String(err)) }
     finally{ setLoading(false) }
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(()=>{ load() }, [year])
+  useEffect(()=>{ load() }, [year, shipId])
 
   async function doBank(){
     if (!amount) return
     try{
       const num = Number(amount)
-      const result = await apiClient.bank(num)
+      if (!shipId) { setError('shipId required'); return }
+      const result = await apiClient.bank(shipId, year, num)
       setKpis(result)
       setCb(result.cb_after)
     }catch(err: unknown){ setError(err instanceof Error ? err.message : String(err)) }
@@ -35,7 +42,8 @@ export default function BankingTab(){
     if (!amount) return
     try{
       const num = Number(amount)
-      const result = await apiClient.apply(num)
+      if (!shipId) { setError('shipId required'); return }
+      const result = await apiClient.apply(shipId, year, num)
       setKpis(result)
       setCb(result.cb_after)
     }catch(err: unknown){ setError(err instanceof Error ? err.message : String(err)) }
@@ -46,7 +54,7 @@ export default function BankingTab(){
   return (
     <div className="p-4">
       <h2 className="text-lg font-semibold mb-3">Banking (Article 20)</h2>
-    <div className="mb-3"><label className="mr-2">Year: <input className="border p-1" value={year} onChange={e=>setYear(Number(e.target.value))} aria-label="year" /></label></div>
+    <div className="mb-3"><label className="mr-2">Ship Id: <input className="border p-1 mr-4" value={shipId} onChange={e=>setShipId(e.target.value)} aria-label="shipId" /></label><label>Year: <input className="border p-1" value={year} onChange={e=>setYear(Number(e.target.value))} aria-label="year" /></label></div>
       {loading && <div>Loading...</div>}
       {error && <div className="text-red-600">{error}</div>}
       <div className="mb-3">Current CB: <strong>{cb ?? '—'}</strong></div>

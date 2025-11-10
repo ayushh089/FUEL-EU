@@ -9,14 +9,23 @@ export default function PoolingTab(){
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string|null>(null)
   const [createdPool, setCreatedPool] = useState<any | null>(null)
+  const [shipIdsText, setShipIdsText] = useState<string>('')
 
   async function load(){
     setLoading(true); setError(null)
     try{
-      const data = await apiClient.getAdjustedCb(year)
-      setMembers(data)
+      // load adjusted CB for each shipId the user entered (comma/line separated)
+      const ids = shipIdsText.split(/[\s,]+/).map(s=>s.trim()).filter(Boolean)
+      const loaded: PoolMember[] = []
+      for (const id of ids) {
+        try{
+          const r = await apiClient.getAdjustedCb(id, year)
+          loaded.push({ shipId: r.shipId, cb_before: r.cb_before, cb_after: r.adjusted })
+        }catch{ /* ignore single failures */ }
+      }
+      setMembers(loaded)
       const map: Record<string, boolean> = {}
-      data.forEach(m=> map[m.shipId] = true)
+      loaded.forEach(m=> map[m.shipId] = true)
       setSelected(map)
     }catch(err: unknown){ setError(err instanceof Error ? err.message : String(err)) }
     finally{ setLoading(false) }
@@ -26,14 +35,14 @@ export default function PoolingTab(){
   useEffect(()=>{ load() }, [year])
 
   const selectedMembers = members.filter(m=> selected[m.shipId])
-  const sum = selectedMembers.reduce((s, m)=> s + m.adjustedCB_before, 0)
+  const sum = selectedMembers.reduce((s, m)=> s + (m.cb_before ?? 0), 0)
 
   const canCreate = sum >= 0 && selectedMembers.length > 0
 
   async function create(){
     if (!canCreate) return
     try{
-      const result = await apiClient.createPool(selectedMembers)
+      const result = await apiClient.createPool(year, selectedMembers)
       setCreatedPool(result)
       // server should return adjusted afters; otherwise refetch
       await load()
@@ -47,7 +56,11 @@ export default function PoolingTab(){
       {loading && <div>Loading...</div>}
       {error && <div className="text-red-600">{error}</div>}
 
-      <div className="mb-3">Pool Sum: <strong className={sum>=0 ? 'text-green-600' : 'text-red-600'}>{sum.toFixed(2)}</strong></div>
+  <div className="mb-3">Enter ship ids (comma or whitespace separated):</div>
+  <div className="mb-3"><textarea aria-label="ship-ids" placeholder="e.g. SHIP1, SHIP2 or one per line" className="border p-1 w-full" rows={3} value={shipIdsText} onChange={e=>setShipIdsText(e.target.value)} /></div>
+  <div className="mb-3"><button className="bg-gray-600 text-white px-3" onClick={load}>Load Members</button></div>
+
+  <div className="mb-3">Pool Sum: <strong className={sum>=0 ? 'text-green-600' : 'text-red-600'}>{sum.toFixed(2)}</strong></div>
 
       <div className="overflow-auto">
       <table className="min-w-full table-auto border-collapse">
@@ -55,8 +68,8 @@ export default function PoolingTab(){
           <tr>
             <th className="border px-2">sel</th>
             <th className="border px-2">shipId</th>
-            <th className="border px-2">adjustedCB_before</th>
-            <th className="border px-2">adjustedCB_after</th>
+            <th className="border px-2">cb_before</th>
+            <th className="border px-2">cb_after</th>
           </tr>
         </thead>
         <tbody>
@@ -64,8 +77,8 @@ export default function PoolingTab(){
             <tr key={m.shipId}>
               <td className="border px-2"><input aria-label={`select-${m.shipId}`} type="checkbox" checked={!!selected[m.shipId]} onChange={e=>setSelected(s=>({...s,[m.shipId]: e.target.checked}))} /></td>
               <td className="border px-2">{m.shipId}</td>
-              <td className="border px-2">{m.adjustedCB_before}</td>
-              <td className="border px-2">{m.adjustedCB_after ?? '—'}</td>
+              <td className="border px-2">{m.cb_before}</td>
+              <td className="border px-2">{m.cb_after ?? '—'}</td>
             </tr>
           ))}
         </tbody>

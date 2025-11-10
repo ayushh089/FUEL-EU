@@ -30,9 +30,9 @@ export default function RoutesTab() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { (async ()=>{ await load() })() }, [])
 
-  async function onSetBaseline(routeId: string) {
+  async function onSetBaseline(id: number) {
     try {
-      await apiClient.setBaseline(routeId)
+      await apiClient.setBaseline(id)
       await load()
       alert('Baseline set')
     } catch (err: unknown) {
@@ -78,10 +78,10 @@ export default function RoutesTab() {
               <td className="border px-2">{r.fuelType}</td>
               <td className="border px-2">{r.year}</td>
               <td className="border px-2">{r.ghgIntensity}</td>
-              <td className="border px-2">{r.fuelConsumption}</td>
-              <td className="border px-2">{r.distance}</td>
-              <td className="border px-2">{r.totalEmissions}</td>
-              <td className="border px-2"><button className="bg-green-600 text-white px-2" onClick={()=>onSetBaseline(r.routeId)}>Set Baseline</button></td>
+              <td className="border px-2">{r.fuelConsumption ?? '—'}</td>
+              <td className="border px-2">{r.distanceKm ?? '—'}</td>
+              <td className="border px-2">{r.totalEmissions ?? '—'}</td>
+              <td className="border px-2"><button className="bg-green-600 text-white px-2" onClick={()=>onSetBaseline(r.id)}>Set Baseline</button></td>
             </tr>
           ))}
         </tbody>
