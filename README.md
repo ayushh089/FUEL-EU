@@ -32,7 +32,10 @@ Prerequisites:
 1) Clone and install
 
 ```powershell
+<<<<<<< HEAD
 cd 'C:\Users\gupta\OneDrive\Desktop\FUEL EU'
+=======
+>>>>>>> 3425219af14a90b26e8414184a9d9e1460319b81
 # install frontend deps
 cd frontend
 npm install
@@ -105,6 +108,7 @@ npm run lint
 npm run build
 ```
 
+<<<<<<< HEAD
 ## API - Sample requests & responses
 
 Below are the most important endpoints used by the frontend. Replace `:id` or query params as needed.
@@ -197,6 +201,9 @@ Response (201):
 ```json
 { "id": "pool-abc123", "members": [{ "shipId": "R-100", "cb_before": 1034.56, "cb_after": 1034.56 }] }
 ```
+=======
+
+>>>>>>> 3425219af14a90b26e8414184a9d9e1460319b81
 
 Note: these are example shapes; your actual responses depend on the database seed and server logic.
 
@@ -214,7 +221,11 @@ Note: these are example shapes; your actual responses depend on the database see
 
 ---
 
+<<<<<<< HEAD
 If you want, I can also:
 - Add images/screenshots (attach screenshots and I'll place them in README),
 - Wire Chart.js into the Compare tab, or
 - Add a small script to seed realistic demo data.
+=======
+
+>>>>>>> 3425219af14a90b26e8414184a9d9e1460319b81
