@@ -52,21 +52,24 @@ export default function BankingTab(){
   const canAct = (cb ?? 0) > 0
 
   return (
-    <div className="p-4">
+    <div>
       <h2 className="text-lg font-semibold mb-3">Banking (Article 20)</h2>
-    <div className="mb-3"><label className="mr-2">Ship Id: <input className="border p-1 mr-4" value={shipId} onChange={e=>setShipId(e.target.value)} aria-label="shipId" /></label><label>Year: <input className="border p-1" value={year} onChange={e=>setYear(Number(e.target.value))} aria-label="year" /></label></div>
+    <div className="mb-3 flex flex-col md:flex-row gap-3 items-start">
+      <label className="mr-2">Ship Id: <input className="border p-1 ml-2" value={shipId} onChange={e=>setShipId(e.target.value)} aria-label="shipId" /></label>
+      <label>Year: <input className="border p-1 ml-2" value={year} onChange={e=>setYear(Number(e.target.value))} aria-label="year" /></label>
+    </div>
       {loading && <div>Loading...</div>}
       {error && <div className="text-red-600">{error}</div>}
       <div className="mb-3">Current CB: <strong>{cb ?? '—'}</strong></div>
 
       <div className="flex gap-2 items-center">
         <input placeholder="amount" className="border p-1" value={amount} onChange={e=>setAmount(e.target.value)} />
-        <button className="bg-green-600 text-white px-3" onClick={doBank} disabled={!canAct}>Bank</button>
-        <button className="bg-indigo-600 text-white px-3" onClick={doApply} disabled={!canAct}>Apply</button>
+        <button className="bg-green-600 text-white px-3 rounded" onClick={doBank} disabled={!canAct}>Bank</button>
+        <button className="bg-indigo-600 text-white px-3 rounded" onClick={doApply} disabled={!canAct}>Apply</button>
       </div>
 
       {kpis && (
-        <div className="mt-4 border p-3">
+        <div className="mt-4 border p-3 rounded bg-gray-50">
           <div>cb_before: {kpis.cb_before}</div>
           <div>applied: {kpis.applied}</div>
           <div>cb_after: {kpis.cb_after}</div>

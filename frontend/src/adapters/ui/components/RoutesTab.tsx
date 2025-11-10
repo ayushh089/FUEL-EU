@@ -42,21 +42,21 @@ export default function RoutesTab() {
   }
 
   return (
-    <div className="p-4">
+    <div>
       <h2 className="text-lg font-semibold mb-3">Routes</h2>
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-col md:flex-row gap-2 mb-4">
         <input placeholder="vesselType" className="border p-1" value={filters.vesselType} onChange={e=>setFilters(s=>({...s,vesselType:e.target.value}))} />
         <input placeholder="fuelType" className="border p-1" value={filters.fuelType} onChange={e=>setFilters(s=>({...s,fuelType:e.target.value}))} />
         <input placeholder="year" className="border p-1" value={filters.year} onChange={e=>setFilters(s=>({...s,year:e.target.value}))} />
-        <button className="bg-blue-600 text-white px-3" onClick={load}>Filter</button>
+        <button className="bg-blue-600 text-white px-3 rounded" onClick={load}>Filter</button>
       </div>
 
       {loading && <div>Loading...</div>}
       {error && <div className="text-red-600">{error}</div>}
 
       <div className="overflow-auto">
-      <table className="min-w-full table-auto border-collapse">
+      <table className="min-w-full table-auto border-collapse feu-table">
         <thead>
           <tr>
             <th className="border px-2">routeId</th>

@@ -25,14 +25,14 @@ export default function CompareTab(){
   }
 
   return (
-    <div className="p-4">
+    <div>
       <h2 className="text-lg font-semibold mb-3">Compare</h2>
       <div className="mb-4">Target: <strong>{TARGET} gCO₂e/MJ</strong></div>
       {loading && <div>Loading...</div>}
       {error && <div className="text-red-600">{error}</div>}
 
-      <div className="overflow-auto">
-      <table className="min-w-full table-auto border-collapse">
+  <div className="overflow-auto">
+  <table className="min-w-full table-auto border-collapse feu-table">
         <thead>
           <tr>
             <th className="border px-2">routeId</th>

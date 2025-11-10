@@ -8,13 +8,12 @@ export default function PoolingTab(){
   const [selected, setSelected] = useState<Record<string, boolean>>({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string|null>(null)
-  const [createdPool, setCreatedPool] = useState<any | null>(null)
+  const [createdPool, setCreatedPool] = useState<Record<string, unknown> | null>(null)
   const [shipIdsText, setShipIdsText] = useState<string>('')
 
   async function load(){
     setLoading(true); setError(null)
     try{
-      // load adjusted CB for each shipId the user entered (comma/line separated)
       const ids = shipIdsText.split(/[\s,]+/).map(s=>s.trim()).filter(Boolean)
       const loaded: PoolMember[] = []
       for (const id of ids) {
@@ -50,17 +49,17 @@ export default function PoolingTab(){
   }
 
   return (
-    <div className="p-4">
+    <div>
       <h2 className="text-lg font-semibold mb-3">Pooling (Article 21)</h2>
       <div className="mb-3"><label>Year: <input className="border p-1 ml-2" value={year} onChange={e=>setYear(Number(e.target.value))} aria-label="pool-year" /></label></div>
       {loading && <div>Loading...</div>}
       {error && <div className="text-red-600">{error}</div>}
 
-  <div className="mb-3">Enter ship ids (comma or whitespace separated):</div>
-  <div className="mb-3"><textarea aria-label="ship-ids" placeholder="e.g. SHIP1, SHIP2 or one per line" className="border p-1 w-full" rows={3} value={shipIdsText} onChange={e=>setShipIdsText(e.target.value)} /></div>
-  <div className="mb-3"><button className="bg-gray-600 text-white px-3" onClick={load}>Load Members</button></div>
+      <div className="mb-3">Enter ship ids (comma or whitespace separated):</div>
+      <div className="mb-3"><textarea aria-label="ship-ids" placeholder="e.g. SHIP1, SHIP2 or one per line" className="border p-1 w-full" rows={3} value={shipIdsText} onChange={e=>setShipIdsText(e.target.value)} /></div>
+      <div className="mb-3"><button className="bg-gray-600 text-white px-3" onClick={load}>Load Members</button></div>
 
-  <div className="mb-3">Pool Sum: <strong className={sum>=0 ? 'text-green-600' : 'text-red-600'}>{sum.toFixed(2)}</strong></div>
+      <div className="mb-3">Pool Sum: <strong className={sum>=0 ? 'text-green-600' : 'text-red-600'}>{sum.toFixed(2)}</strong></div>
 
       <div className="overflow-auto">
       <table className="min-w-full table-auto border-collapse">
